@@ -112,6 +112,18 @@ def shoelace_formula_area(x: list,y: list) -> float:
 	return 0.5*abs(main_area + edge_terms)
 
 def intersection_over_union(data: pd.DataFrame) -> np.array:
+	"""
+	Calculates intersection over union for given data frame
+
+	Parameters
+	-----------
+	data:
+	Pandas DataFrame containing points' coordinates grouped in rows
+
+	Returns
+	--------
+	Numpy array with calculated intersection for each row given
+	"""
 	boxA = data.filter(like = "label", axis = 1)
 	boxB = data.filter(like = 'prediction', axis = 1)
 	boxB = boxB.fillna(0)
