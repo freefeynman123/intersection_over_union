@@ -1,10 +1,5 @@
 import pandas as pd
 import numpy as np
-data = pd.read_csv("data.csv")
-
-boxA = data.filter(like = "label", axis = 1)
-boxB = data.filter(like = 'prediction', axis = 1)
-boxB = boxB.fillna(0)
 
 def clip(subject_polygon: list, clip_polygon: list) -> np.array:
 
@@ -44,7 +39,8 @@ def clip(subject_polygon: list, clip_polygon: list) -> np.array:
 
 	def computeIntersection(last_point: tuple, vertex_point: tuple, point_s: tuple, point_e: tuple) -> np.array:
 		"""
-		Computes intersection between one of the edges of clipping polygon and subject polygon
+		Computes intersection between a line segment and an infinite edge
+		It is only called if such an intersection is known to exist
 
 		Parameters
 		------------
@@ -65,26 +61,26 @@ def clip(subject_polygon: list, clip_polygon: list) -> np.array:
 		--------
 		Coordinates of intersection point
 		"""
-		dc = [last_point[0] - vertex_point[0], last_point[1] - vertex_point[1]]
-		dp = [point_s[0] - point_e[0], point_s[1] - point_e[1] ]
+		polygon_difference = [last_point[0] - vertex_point[0], last_point[1] - vertex_point[1]]
+		points_difference = [point_s[0] - point_e[0], point_s[1] - point_e[1] ]
 		n1 = last_point[0]*vertex_point[1] - last_point[1]*vertex_point[0]
 		n2 = point_s[0]*point_e[1] - point_s[1] *point_e[0] 
-		n3 = 1.0 / (dc[0]*dp[1] - dc[1]*dp[0])
-		return np.array([(n1*dp[0] - n2*dc[0])*n3, (n1*dp[1] - n2*dc[1])*n3])
+		n3 = 1.0 / (polygon_difference[0]*points_difference[1] - polygon_difference[1]*points_difference[0])
+		return np.array([(n1*points_difference[0] - n2*polygon_difference[0])*n3, (n1*points_difference[1] - n2*polygon_difference[1])*n3])
 
 	output_list = subject_polygon
 	clip_polygon_last_point = clip_polygon[-1]
 
 	for clip_vertex in clip_polygon:
 		clip_vertex_point = clip_vertex
-		inputList = output_list
+		input_list = output_list
 		output_list = []
 		try:
-			point_s= inputList[-1]
+			point_s= input_list[-1]
 		except IndexError:
 			break
 
-		for subject_vertex in inputList:
+		for subject_vertex in input_list:
 			point_e = subject_vertex
 			if inside(point_e):
 				if not inside(point_s):
@@ -115,9 +111,10 @@ def shoelace_formula_area(x: list,y: list) -> float:
 	edge_terms = x[-1]*y[0] - y[-1]*x[0]
 	return 0.5*abs(main_area + edge_terms)
 
-
-if __name__ == "__main__":
-
+def intersection_over_union(data: pd.DataFrame) -> np.array:
+	boxA = data.filter(like = "label", axis = 1)
+	boxB = data.filter(like = 'prediction', axis = 1)
+	boxB = boxB.fillna(0)
 	results = []
 	for x,y in zip(boxA.values,boxB.values):
 		points_label = list(zip(x[::2], x[1::2]))
@@ -131,7 +128,11 @@ if __name__ == "__main__":
 			results.append(0)
 			continue
 		results.append(intersection_area/(label_area + prediction_area - intersection_area))
-	print(results)
+	return np.asarray(results)
+
+if __name__ == "__main__":
+	data = pd.read_csv("data.csv")
+	print(intersection_over_union(data))
 
 
 
