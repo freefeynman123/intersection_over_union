@@ -2,8 +2,6 @@
 
 Run script by typing
 
-'''
-
+```
 python finai.py
-
-'''
+```
