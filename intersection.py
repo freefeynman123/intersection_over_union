@@ -9,31 +9,31 @@ def clip(subject_polygon: list, clip_polygon: list) -> np.array:
     The approach is based on Sutherland–Hodgman algorithm
 
     Parameters
-	----------
-	subject_polygon:
-	list of tuples with Nx2 dimension
-	clip_polygon:
-	list of tuples with Nx2 dimension
+    ----------
+    subject_polygon:
+    list of tuples with Nx2 dimension
+    clip_polygon:
+    list of tuples with Nx2 dimension
 
-	Returns
-	-------
-	output_list:
-	list of lists containing x and y coordinates of the intersection polygon
-	"""
+    Returns
+    -------
+    output_list:
+    list of lists containing x and y coordinates of the intersection polygon
+    """
 
     def inside(point: tuple) -> bool:
         """
-		Finds whether given point is inside clipping polygon
+        Finds whether given point is inside clipping polygon
 
-		Parameters
-		----------
-		point:
-		A tuple with points' coordinates
+        Parameters
+        ----------
+        point:
+        A tuple with points' coordinates
 
-		Returns
-		-------
-		Boolean value indicating whether given point is inside the clipping polygon
-		"""
+        Returns
+        -------
+        Boolean value indicating whether given point is inside the clipping polygon
+        """
         cond1 = (clip_vertex_point[0] - clip_polygon_last_point[0]) * (point[1] - clip_polygon_last_point[1])
         cond2 = (clip_vertex_point[1] - clip_polygon_last_point[1]) * (point[0] - clip_polygon_last_point[0])
         return cond1 > cond2
@@ -41,28 +41,28 @@ def clip(subject_polygon: list, clip_polygon: list) -> np.array:
     def compute_intersection(last_point: tuple, vertex_point: tuple, point_s: tuple,
                              point_e: tuple) -> np.array:
         """
-		Computes intersection between a line segment and an infinite edge
-		It is only called if such an intersection is known to exist
+        Computes intersection between a line segment and an infinite edge
+        It is only called if such an intersection is known to exist
 
-		Parameters
-		------------
-		last_point:
-		A tuple containing coordinates of one of the clipped polygon points,
-		initiated with last point of this polygon, afterwards contains information
-		about previously used vertex_point
-		vertex_point:
-		A tuple containing coordinates of one of the clipped polygon points
-		point_s:
-		A tuple containing coordinates of one of the subject polygon points
-		initiated with last point of this polygon, afterwards contains information
-		about previously used point_e
-		point_e:
-		A tuple containing coordinates of one of the subject polygon points
+        Parameters
+        ------------
+        last_point:
+        A tuple containing coordinates of one of the clipped polygon points,
+        initiated with last point of this polygon, afterwards contains information
+        about previously used vertex_point
+        vertex_point:
+        A tuple containing coordinates of one of the clipped polygon points
+        point_s:
+        A tuple containing coordinates of one of the subject polygon points
+        initiated with last point of this polygon, afterwards contains information
+        about previously used point_e
+        point_e:
+        A tuple containing coordinates of one of the subject polygon points
 
-		Returns
-		--------
-		Coordinates of intersection point
-		"""
+        Returns
+        --------
+        Coordinates of intersection point
+        """
         polygon_difference = [last_point[0] - vertex_point[0], last_point[1] - vertex_point[1]]
         points_difference = [point_s[0] - point_e[0], point_s[1] - point_e[1]]
         n1 = last_point[0] * vertex_point[1] - last_point[1] * vertex_point[0]
@@ -101,19 +101,19 @@ def clip(subject_polygon: list, clip_polygon: list) -> np.array:
 
 def shoelace_formula_area(x: list, y: list) -> float:
     """
-	Calculates area of the simple polygon bsed on the shoelace algorithm
+    Calculates area of the simple polygon bsed on the shoelace algorithm
 
-	Parameters
-	-----------
-	x:
-	list contaning all x coordinates
-	y:
-	list containing all y coordinates
+    Parameters
+    -----------
+    x:
+    list contaning all x coordinates
+    y:
+    list containing all y coordinates
 
-	Returns
-	--------
-	Area of a polygon with given coordinates
-	"""
+    Returns
+    --------
+    Area of a polygon with given coordinates
+    """
     main_area = np.dot(x[:-1], y[1:]) - np.dot(x[1:], y[:-1])
     edge_terms = x[-1] * y[0] - y[-1] * x[0]
     return 0.5 * abs(main_area + edge_terms)
@@ -121,12 +121,12 @@ def shoelace_formula_area(x: list, y: list) -> float:
 
 def intersection_over_union(coordinates: pd.DataFrame, label_a: str, label_b: str) -> np.array:
     """
-	Calculates intersection over union for given data frame
+    Calculates intersection over union for given data frame
 
-	Parameters
-	-----------
-	coordinates:
-	Pandas DataFrame containing points' coordinates grouped in rows
+    Parameters
+    -----------
+    coordinates:
+    Pandas DataFrame containing points' coordinates grouped in rows
 
     label_a:
     String containing label for box_a in columns' names
@@ -134,10 +134,10 @@ def intersection_over_union(coordinates: pd.DataFrame, label_a: str, label_b: st
     label_b:
     String containing label for box_a in columns' names
 
-	Returns
-	--------
-	Numpy array with calculated intersection for each row given
-	"""
+    Returns
+    --------
+    Numpy array with calculated intersection for each row given
+    """
     box_a = data.filter(like=label_a, axis=1)
     box_b = data.filter(like=label_b, axis=1)
     results = []
