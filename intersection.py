@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import time
 
 
 def clip(subject_polygon: list, clip_polygon: list) -> np.array:
@@ -118,7 +119,7 @@ def shoelace_formula_area(x: list, y: list) -> float:
     return 0.5 * abs(main_area + edge_terms)
 
 
-def intersection_over_union(coordinates: pd.DataFrame) -> np.array:
+def intersection_over_union(coordinates: pd.DataFrame, label_a: str, label_b: str) -> np.array:
     """
 	Calculates intersection over union for given data frame
 
@@ -127,12 +128,18 @@ def intersection_over_union(coordinates: pd.DataFrame) -> np.array:
 	coordinates:
 	Pandas DataFrame containing points' coordinates grouped in rows
 
+    label_a:
+    String containing label for box_a in columns' names
+
+    label_b:
+    String containing label for box_a in columns' names
+
 	Returns
 	--------
 	Numpy array with calculated intersection for each row given
 	"""
-    box_a = data.filter(like="label", axis=1)
-    box_b = data.filter(like='prediction', axis=1)
+    box_a = data.filter(like=label_a, axis=1)
+    box_b = data.filter(like=label_b, axis=1)
     results = []
     for coord_x, coord_y in zip(box_a.values, box_b.values):
         points_label = list(zip(coord_x[::2], coord_x[1::2]))
@@ -149,8 +156,3 @@ def intersection_over_union(coordinates: pd.DataFrame) -> np.array:
         results.append(intersection_area / (label_area + prediction_area - intersection_area))
     return np.asarray(results)
 
-
-if __name__ == "__main__":
-    data = pd.read_csv("data.csv")
-    # Show results for problem given in a task
-    print(intersection_over_union(data))

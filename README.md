@@ -1,7 +1,3 @@
-# finai_task
+# intersection_over_union
 
-Run script by typing
-
-```
-python finai.py
-```
+File contains algorithm to calculate intersection over union for two convex polygons
